@@ -1,0 +1,37 @@
+#
+# GitHub Action to deploy AWS Lambdda
+#
+name: Deploy AWS Lambda
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy-lamda:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "12"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: serverless deploy
+        uses: serverless/github-action@master
+        with:
+          args: deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.NOTIFY_SLACK_WEBHOOK }}
+          SLACK_USERNAME:  deploy-bot
+          SLACK_ICON:  https://wordstream-files-prod.s3.amazonaws.com/s3fs-public/styles/simple_image/public/images/media/images/facebook-messenger-bots-robot.jpg?e2HI5ngWraq13ZjAOec1O6C6WAw5bHyB&itok=JL3-yeqn
+          SLACK_MESSAGE: 'Wilbert Abreu Blog Deployment Completed'
