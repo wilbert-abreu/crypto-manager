@@ -111,3 +111,13 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - "s3:*"
+    Resource:
+      - Fn::Join:
+      - ''
+      - - 'arn:aws:s3:::'
+        - Ref: GeneralBucketS3LogicalID
+        - "/*"
